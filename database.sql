@@ -7,3 +7,7 @@ CREATE TABLE sk_categories (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO sk_categories (name, description) VALUES
+('SK Officials', 'Elected Sangguniang Kabataan officials including SK Chairman and Councilors'),
+('Ordinary SK Members', 'Regular registered youth members of the Barangay SK');
