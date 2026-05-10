@@ -92,4 +92,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // ── Change Password ───────────────────────────────────
+    elseif ($action === 'change_password') {
+        $current = $_POST['current_password'] ?? '';
+        $newPass = $_POST['new_password']     ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+
+        $row = $pdo->prepare("SELECT password FROM users WHERE id=?");
+        $row->execute([$userId]);
+        $hash = $row->fetchColumn();
+
+        if (!password_verify($current, $hash)) {
+            $msg = 'Current password is incorrect.'; $msgType = 'error';
+        } elseif (strlen($newPass) < 8) {
+            $msg = 'New password must be at least 8 characters.'; $msgType = 'error';
+        } elseif ($newPass !== $confirm) {
+            $msg = 'Passwords do not match.'; $msgType = 'error';
+        } else {
+            $pdo->prepare("UPDATE users SET password=? WHERE id=?")->execute([password_hash($newPass, PASSWORD_DEFAULT), $userId]);
+            $msg = 'Password changed successfully!';
+        }
+    }
+}
+
+// LEFT JOIN: user + category + their activity participation count
+$stmt = $pdo->prepare("
+    SELECT u.*, c.name AS category_name,
+           COUNT(DISTINCT ap.id)          AS activities_joined,
+           COUNT(DISTINCT CASE WHEN ap.attendance_status='Attended' THEN ap.id END) AS activities_attended
+    FROM users u
+    LEFT JOIN sk_categories c  ON u.category_id = c.id
+    LEFT JOIN activity_participants ap ON ap.user_id = u.id
+    WHERE u.id = ?
+    GROUP BY u.id
+");
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+$avatarUrl = getAvatarUrl($user['profile_picture']);
+
+// Recent activity participation (INNER JOIN)
+$recentActs = $pdo->prepare("
+    SELECT a.title, a.activity_type, a.activity_date, a.status, ap.attendance_status
+    FROM activity_participants ap
+    INNER JOIN activities a ON ap.activity_id = a.id
+    WHERE ap.user_id = ?
+    ORDER BY ap.joined_at DESC
+    LIMIT 6
+");
+$recentActs->execute([$userId]);
+$recentActs = $recentActs->fetchAll();
+
+$categories = $pdo->query("SELECT * FROM sk_categories ORDER BY id")->fetchAll();
+?>
+
+<?php if ($msg): ?>
+<div class="alert alert-<?= $msgType ?>">
+    <i class="fas <?= $msgType==='success'?'fa-check-circle':'fa-circle-exclamation' ?>"></i>
+    <?= sanitize($msg) ?>
+</div>
+<?php endif; ?>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
