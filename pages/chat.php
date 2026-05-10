@@ -107,5 +107,20 @@ async function deleteMessage(id) {
     if (el) el.innerHTML = '<div style="padding:.4rem .75rem;background:var(--gray-100);border-radius:8px;font-size:.8rem;color:var(--gray-400);font-style:italic">Message deleted</div>';
 }
 
+function escHtml(str) {
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Enter to send
+document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+// Auto-resize textarea
+document.getElementById('chatInput').addEventListener('input', function() {
+    this.style.height = '';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
 
 </script>
