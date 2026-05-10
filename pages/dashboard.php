@@ -241,7 +241,7 @@ $topParticipants = $pdo->query("
 </div>
 
 <script>
-// ── Chart.js defaults ────────────────────────────────────────
+// Chart.js defaults 
 Chart.defaults.font.family = "'DM Sans', sans-serif";
 Chart.defaults.color = '#5a7265';
 
