@@ -322,3 +322,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 </div>
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.auth-form-wrap').forEach(f => f.classList.remove('active'));
+    document.querySelector(`#tab-${tab}`).classList.add('active');
+    event.target.classList.add('active');
+}
+function togglePass(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.innerHTML = inp.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+}
+function previewAvatar(input) {
+    const reader = new FileReader();
+    reader.onload = e => document.getElementById('avatarImg').src = e.target.result;
+    reader.readAsDataURL(input.files[0]);
+}
+</script>
+</body>
+</html>
