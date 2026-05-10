@@ -208,6 +208,48 @@ $stats = [
     </div>
 </div>
 
+<div id="report-inactive" class="report-tab-pane card" style="display:none">
+    <div class="card-header">
+        <div class="card-title"><i class="fas fa-user-slash"></i> Members with No Activity Participation <span style="font-size:.75rem;color:var(--gray-400);font-weight:400;margin-left:.5rem">(LEFT JOIN + WHERE ap.id IS NULL)</span></div>
+        <span style="font-size:.82rem;color:var(--gray-400)"><?= count($inactiveMembers) ?> records</span>
+    </div>
+    <?php if ($inactiveMembers): ?>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Position</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Registered</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($inactiveMembers as $i => $im): ?>
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td style="font-weight:600"><?= sanitize($im['first_name'] . ' ' . $im['last_name']) ?></td>
+                <td><span class="badge <?= $im['category_name']==='SK Officials'?'badge-official':'badge-member' ?>" style="font-size:.7rem"><?= sanitize($im['category_name']) ?></span></td>
+                <td><?= sanitize($im['sk_position'] ?? '—') ?></td>
+                <td><?= sanitize($im['email']) ?></td>
+                <td><span class="badge badge-<?= strtolower($im['status']) ?>" style="font-size:.7rem"><?= $im['status'] ?></span></td>
+                <td><?= date('M d, Y', strtotime($im['created_at'])) ?></td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php else: ?>
+    <div class="empty-state">
+        <i class="fas fa-trophy"></i>
+        <p>All members have participated in at least one activity!</p>
+    </div>
+    <?php endif; ?>
+</div>
+
 
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
