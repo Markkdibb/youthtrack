@@ -96,4 +96,33 @@ $topParticipants = $pdo->query("
 ")->fetchAll();
 ?>
 
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-users"></i></div>
+        <div><div class="stat-value"><?= $totalMembers ?></div><div class="stat-label">Active Members</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-calendar-check"></i></div>
+        <div><div class="stat-value"><?= $totalActivities ?></div><div class="stat-label">Total Activities</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-spinner"></i></div>
+        <div><div class="stat-value"><?= $ongoingActs ?></div><div class="stat-label">Ongoing Activities</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+        <div><div class="stat-value"><?= $pendingActs ?></div><div class="stat-label">Pending Activities</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-comments"></i></div>
+        <div><div class="stat-value"><?= $totalChat ?></div><div class="stat-label">Chat Messages</div></div>
+    </div>
+    <?php if (isAdmin()): ?>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-user-clock"></i></div>
+        <div><div class="stat-value"><?= $pendingMembers ?></div><div class="stat-label">Pending Approvals</div></div>
+    </div>
+    <?php endif; ?>
+</div>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
