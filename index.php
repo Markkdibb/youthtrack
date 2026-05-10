@@ -241,3 +241,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         </select>
                     </div>
                 </div>
+
+                <div class="form-section-title">Education & SK Information</div>
+                <div class="form-group">
+                    <label>Educational Attainment <span class="req">*</span></label>
+                    <select name="educational_attainment" required>
+                        <?php foreach(['Elementary Level','Elementary Graduate','High School Level','High School Graduate','Senior High School Level','Senior High School Graduate','College Level','College Graduate','Vocational/Technical','Post Graduate','None'] as $e): ?>
+                        <option value="<?=$e?>" <?= ($_POST['educational_attainment'] ?? '') == $e ? 'selected' : '' ?>><?=$e?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" name="school_name" placeholder="Current/Last school attended" value="<?= sanitize($_POST['school_name'] ?? '') ?>">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SK Category <span class="req">*</span></label>
+                        <select name="category_id" required>
+                            <option value="">Select category</option>
+                            <option value="1" <?= ($_POST['category_id'] ?? '') == 1 ? 'selected' : '' ?>>SK Officials</option>
+                            <option value="2" <?= ($_POST['category_id'] ?? '') == 2 ? 'selected' : '' ?>>Ordinary SK Members</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>SK Position / Role</label>
+                        <input type="text" name="sk_position" placeholder="e.g. SK Councilor" value="<?= sanitize($_POST['sk_position'] ?? '') ?>">
+                    </div>
+                </div>
+
+                <div class="form-section-title">Contact & Address</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email <span class="req">*</span></label>
+                        <input type="email" name="email" placeholder="email@example.com" required value="<?= sanitize($_POST['email'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="text" name="contact_number" placeholder="09XXXXXXXXX" value="<?= sanitize($_POST['contact_number'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Complete Address</label>
+                    <input type="text" name="address" placeholder="House No., Street, Barangay" value="<?= sanitize($_POST['address'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label>Purok</label>
+                    <input type="text" name="purok" placeholder="Purok name or number" value="<?= sanitize($_POST['purok'] ?? '') ?>">
+                </div>
+                <div class="form-group">
+                    <label>Short Bio</label>
+                    <textarea name="bio" rows="2" placeholder="Tell us about yourself..."><?= sanitize($_POST['bio'] ?? '') ?></textarea>
+                </div>
+
+                <div class="form-section-title">Account Credentials</div>
+                <div class="form-group">
+                    <label>Username <span class="req">*</span></label>
+                    <input type="text" name="username" placeholder="Choose a username" required value="<?= sanitize($_POST['username'] ?? '') ?>">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password <span class="req">*</span></label>
+                        <div class="input-password">
+                            <input type="password" name="password" id="regPass" placeholder="Min. 8 characters" required>
+                            <button type="button" onclick="togglePass('regPass',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password <span class="req">*</span></label>
+                        <div class="input-password">
+                            <input type="password" name="confirm_password" id="confPass" placeholder="Repeat password" required>
+                            <button type="button" onclick="togglePass('confPass',this)"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Submit Registration <i class="fas fa-paper-plane"></i></button>
+                <p class="form-note">Your account will be reviewed and approved by an SK admin.</p>
+            </form>
+        </div>
+    </div>
+</div>
