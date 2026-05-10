@@ -51,7 +51,7 @@ $inactiveMembers = $pdo->query("
     ORDER BY u.created_at DESC
 ")->fetchAll();
 
-/ ── Summary Stats
+// ── Summary Stats
 $stats = [
     'total_members'   => $pdo->query("SELECT COUNT(*) FROM users WHERE status='Active'")->fetchColumn(),
     'officials'       => $pdo->query("SELECT COUNT(*) FROM users u INNER JOIN sk_categories c ON u.category_id=c.id WHERE c.id=1 AND u.status='Active'")->fetchColumn(),
@@ -62,6 +62,38 @@ $stats = [
     'no_participation'=> count($inactiveMembers),
 ];
 ?>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:1.5rem">
+    <button class="btn-secondary" onclick="window.print()"><i class="fas fa-print"></i> Print Report</button>
+</div>
+
+<!-- Summary Cards -->
+<div class="stats-grid" style="margin-bottom:1.5rem">
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-users"></i></div>
+        <div><div class="stat-value"><?= $stats['total_members'] ?></div><div class="stat-label">Active Members</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-star"></i></div>
+        <div><div class="stat-value"><?= $stats['officials'] ?></div><div class="stat-label">SK Officials</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-user-group"></i></div>
+        <div><div class="stat-value"><?= $stats['ordinary'] ?></div><div class="stat-label">Ordinary Members</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
+        <div><div class="stat-value"><?= $stats['total_activities'] ?></div><div class="stat-label">Total Activities</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-circle-check"></i></div>
+        <div><div class="stat-value"><?= $stats['completed'] ?></div><div class="stat-label">Completed</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-user-slash"></i></div>
+        <div><div class="stat-value"><?= $stats['no_participation'] ?></div><div class="stat-label">Never Participated</div></div>
+    </div>
+</div>
 
 
 
