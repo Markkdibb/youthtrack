@@ -459,4 +459,61 @@ $categories = $pdo->query("SELECT * FROM sk_categories ORDER BY id")->fetchAll()
     <?php endif; ?>
 </div>
 
+<script>
+function switchProfileTab(tab, btn) {
+    document.querySelectorAll('.profile-tab-pane').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('tab-' + tab);
+    if (el) el.style.display = 'block';
+    if (btn) btn.classList.add('active');
+}
+
+function togglePass(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type  = inp.type === 'password' ? 'text' : 'password';
+    btn.innerHTML = inp.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+}
+
+function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('avatarPreviewImg').src = e.target.result;
+            document.getElementById('heroAvatar').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function liveStrength(val) {
+    const bar   = document.getElementById('strengthBar');
+    const label = document.getElementById('strengthLabel');
+    let score = 0;
+    const rules = [
+        { id: 'rule-len',   test: val.length >= 8 },
+        { id: 'rule-upper', test: /[A-Z]/.test(val) },
+        { id: 'rule-num',   test: /[0-9]/.test(val) },
+        { id: 'rule-sym',   test: /[^A-Za-z0-9]/.test(val) },
+    ];
+    rules.forEach(r => {
+        const el = document.getElementById(r.id);
+        if (!el) return;
+        el.style.color = r.test ? 'var(--green-dark)' : 'var(--gray-400)';
+        el.querySelector('i').className = r.test ? 'fas fa-check-circle' : 'fas fa-circle';
+        el.querySelector('i').style.fontSize = r.test ? '.8rem' : '.5rem';
+        if (r.test) score++;
+    });
+    const pct    = score * 25;
+    const colors = ['','var(--red)','var(--orange)','var(--blue)','var(--green)'];
+    const labels = ['','Weak','Fair','Good','Strong'];
+    bar.style.width      = pct + '%';
+    bar.style.background = colors[score];
+    label.textContent    = labels[score];
+    label.style.color    = colors[score];
+}
+
+// Init first tab
+document.querySelector('.profile-tab-pane').style.display = 'block';
+</script>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
