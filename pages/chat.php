@@ -36,4 +36,30 @@ const API_URL    = '<?= SITE_URL ?>/pages/api.php';
 let lastMsgId    = 0;
 let isPolling    = false;
 
+async function loadMessages() {
+    if (isPolling) return;
+    isPolling = true;
+    try {
+        const res  = await fetch(`${API_URL}?action=get_messages&since=${lastMsgId}`);
+        const data = await res.json();
+        if (data.messages && data.messages.length) {
+            const container = document.getElementById('chatMessages');
+            const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+            if (lastMsgId === 0) container.innerHTML = '';
+
+            data.messages.forEach(m => {
+                lastMsgId = Math.max(lastMsgId, m.id);
+                appendMessage(m);
+            });
+
+            if (wasAtBottom || lastMsgId === data.messages[data.messages.length-1].id) {
+                container.scrollTop = container.scrollHeight;
+            }
+        } else if (lastMsgId === 0) {
+            document.getElementById('chatMessages').innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>No messages yet. Say hello!</p></div>';
+        }
+    } catch(e) { console.error(e); }
+    isPolling = false;
+}
+
 </script>
