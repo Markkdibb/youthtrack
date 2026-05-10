@@ -46,5 +46,54 @@ $actStatusChart = $pdo->query("
     GROUP BY status
 ")->fetchAll();
 
+// Chart: Members by Educational Attainment
+$eduChart = $pdo->query("
+    SELECT educational_attainment, COUNT(*) AS total
+    FROM users
+    WHERE status = 'Active'
+    GROUP BY educational_attainment
+    ORDER BY total DESC
+")->fetchAll();
+
+// Chart: Monthly registrations 
+$monthChart = $pdo->query("
+    SELECT DATE_FORMAT(created_at, '%b %Y') AS month, COUNT(*) AS total
+    FROM users
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY YEAR(created_at), MONTH(created_at)
+    ORDER BY created_at ASC
+")->fetchAll();
+
+// Recent Activities (INNER JOIN with creator)
+// INNER JOIN: only show activities that have a known creator
+$recentActivities = $pdo->query("
+    SELECT a.*, u.first_name, u.last_name, u.profile_picture
+    FROM activities a
+    INNER JOIN users u ON a.created_by = u.id
+    ORDER BY a.created_at DESC
+    LIMIT 5
+")->fetchAll();
+
+// Pinned Announcements (LEFT JOIN with poster – poster may be deleted)
+$announcements = $pdo->query("
+    SELECT ann.*, u.first_name, u.last_name
+    FROM announcements ann
+    LEFT JOIN users u ON ann.posted_by = u.id
+    ORDER BY ann.is_pinned DESC, ann.created_at DESC
+    LIMIT 3
+")->fetchAll();
+
+// Top participants (RIGHT JOIN concept: show activities even without participants)
+$topParticipants = $pdo->query("
+    SELECT u.first_name, u.last_name, u.profile_picture, u.sk_position,
+           COUNT(ap.id) AS event_count
+    FROM activity_participants ap
+    INNER JOIN users u ON ap.user_id = u.id
+    WHERE ap.attendance_status = 'Attended'
+    GROUP BY u.id
+    ORDER BY event_count DESC
+    LIMIT 5
+")->fetchAll();
+?>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
