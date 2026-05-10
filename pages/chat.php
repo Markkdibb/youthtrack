@@ -97,4 +97,15 @@ async function sendMessage() {
     } catch(e) { input.value = msg; }
 }
 
+async function deleteMessage(id) {
+    if (!confirm('Delete this message?')) return;
+    const fd = new FormData();
+    fd.append('action', 'delete_message');
+    fd.append('id', id);
+    await fetch(API_URL, { method: 'POST', body: fd });
+    const el = document.querySelector(`[data-msg-id="${id}"]`);
+    if (el) el.innerHTML = '<div style="padding:.4rem .75rem;background:var(--gray-100);border-radius:8px;font-size:.8rem;color:var(--gray-400);font-style:italic">Message deleted</div>';
+}
+
+
 </script>
