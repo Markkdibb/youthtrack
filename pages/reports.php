@@ -250,6 +250,16 @@ $stats = [
     <?php endif; ?>
 </div>
 
+<script>
+function switchReportTab(tab, btn) {
+    document.querySelectorAll('.report-tab-pane').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById('report-' + tab);
+    if (el) el.style.display = 'block';
+    if (btn) btn.classList.add('active');
+}
+</script>
+
 
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
