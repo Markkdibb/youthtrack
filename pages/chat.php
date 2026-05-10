@@ -28,3 +28,12 @@ $me = getCurrentUser();
         <button class="btn-send" id="sendBtn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
     </div>
 </div>
+
+<script>
+const MY_ID      = <?= (int)$_SESSION['user_id'] ?>;
+const IS_ADMIN   = <?= isAdmin() ? 'true' : 'false' ?>;
+const API_URL    = '<?= SITE_URL ?>/pages/api.php';
+let lastMsgId    = 0;
+let isPolling    = false;
+
+</script>
