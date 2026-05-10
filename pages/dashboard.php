@@ -240,4 +240,82 @@ $topParticipants = $pdo->query("
     </div>
 </div>
 
+<script>
+// ── Chart.js defaults ────────────────────────────────────────
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+Chart.defaults.color = '#5a7265';
+
+const GREENS  = ['#2ecc71','#0d6e5a','#1a9e50','#27ae60','#6ec99e','#b2dfdb'];
+const PALETTE = ['#2ecc71','#3498db','#9b59b6','#f39c12','#e74c3c','#1abc9c','#e67e22'];
+
+// Members by Category (LEFT JOIN result)
+new Chart(document.getElementById('catChart'), {
+    type: 'bar',
+    data: {
+        labels: <?= json_encode(array_column($catChart, 'name')) ?>,
+        datasets: [{ label: 'Members', data: <?= json_encode(array_column($catChart, 'total')) ?>, backgroundColor: GREENS, borderRadius: 8 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Gender Chart (INNER JOIN result)
+new Chart(document.getElementById('genderChart'), {
+    type: 'doughnut',
+    data: {
+        labels: <?= json_encode(array_column($genderChart, 'gender')) ?>,
+        datasets: [{ data: <?= json_encode(array_column($genderChart, 'total')) ?>, backgroundColor: PALETTE, borderWidth: 3, borderColor: '#fff' }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16 } } } }
+});
+
+// Activity Type
+new Chart(document.getElementById('actTypeChart'), {
+    type: 'polarArea',
+    data: {
+        labels: <?= json_encode(array_column($actTypeChart, 'activity_type')) ?>,
+        datasets: [{ data: <?= json_encode(array_column($actTypeChart, 'total')) ?>, backgroundColor: PALETTE.map(c => c + 'cc') }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } } }
+});
+
+// Education
+new Chart(document.getElementById('eduChart'), {
+    type: 'bar',
+    data: {
+        labels: <?= json_encode(array_column($eduChart, 'educational_attainment')) ?>,
+        datasets: [{ label: 'Members', data: <?= json_encode(array_column($eduChart, 'total')) ?>, backgroundColor: '#0d6e5a', borderRadius: 6 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Monthly
+new Chart(document.getElementById('monthChart'), {
+    type: 'line',
+    data: {
+        labels: <?= json_encode(array_column($monthChart, 'month')) ?>,
+        datasets: [{
+            label: 'Registrations',
+            data: <?= json_encode(array_column($monthChart, 'total')) ?>,
+            fill: true,
+            backgroundColor: 'rgba(46,204,113,.1)',
+            borderColor: '#2ecc71',
+            tension: .4,
+            pointBackgroundColor: '#2ecc71',
+            pointRadius: 5
+        }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+
+// Activity Status
+new Chart(document.getElementById('actStatusChart'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode(array_column($actStatusChart, 'status')) ?>,
+        datasets: [{ data: <?= json_encode(array_column($actStatusChart, 'total')) ?>, backgroundColor: ['#f39c12','#3498db','#2ecc71','#e74c3c'], borderWidth: 3, borderColor: '#fff' }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } } }
+});
+</script>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
