@@ -61,5 +61,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    elseif ($action === 'upload_avatar') {
+        if (!empty($_FILES['avatar']['name'])) {
+            $ext     = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg','jpeg','png','gif','webp'];
+            $size    = $_FILES['avatar']['size'];
+            if (!in_array($ext, $allowed)) {
+                $msg = 'Only JPG, PNG, GIF, WEBP files are allowed.'; $msgType = 'error';
+            } elseif ($size > 3 * 1024 * 1024) {
+                $msg = 'File is too large (max 3MB).'; $msgType = 'error';
+            } else {
+                // Remove old avatar (if not default)
+                $cur = $pdo->prepare("SELECT profile_picture FROM users WHERE id=?");
+                $cur->execute([$userId]);
+                $old = $cur->fetchColumn();
+                if ($old && $old !== 'default.png') {
+                    $oldPath = UPLOAD_PATH . $old;
+                    if (file_exists($oldPath)) unlink($oldPath);
+                }
+                $newName = uniqid('avatar_', true) . '.' . $ext;
+                if (move_uploaded_file($_FILES['avatar']['tmp_name'], UPLOAD_PATH . $newName)) {
+                    $pdo->prepare("UPDATE users SET profile_picture=? WHERE id=?")->execute([$newName, $userId]);
+                    $msg = 'Profile photo updated!';
+                } else {
+                    $msg = 'Upload failed. Check server permissions.'; $msgType = 'error';
+                }
+            }
+        } else {
+            $msg = 'No file selected.'; $msgType = 'error';
+        }
+    }
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
