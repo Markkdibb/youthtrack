@@ -260,6 +260,13 @@ function switchReportTab(tab, btn) {
 }
 </script>
 
-
+<style>
+@media print {
+    .sidebar, .topbar, .page-tabs, .btn-secondary, button { display: none !important; }
+    .main-content { margin-left: 0 !important; }
+    .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+    .report-tab-pane { display: block !important; margin-bottom: 2rem; }
+}
+</style>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
