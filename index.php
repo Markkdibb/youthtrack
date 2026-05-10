@@ -135,3 +135,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="stat"><i class="fas fa-comments"></i><span>Community Chat</span></div>
             </div>
         </div>
+
+        <div class="auth-panel">
+        <div class="auth-tabs">
+            <button class="tab-btn <?= $mode === 'login' ? 'active' : '' ?>" onclick="switchTab('login')">Sign In</button>
+            <button class="tab-btn <?= $mode === 'register' ? 'active' : '' ?>" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <?php if ($error): ?>
+            <div class="alert alert-error"><i class="fas fa-circle-exclamation"></i> <?= sanitize($error) ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="alert alert-success"><i class="fas fa-circle-check"></i> <?= sanitize($success) ?></div>
+        <?php endif; ?>
+
+        
+        <div id="tab-login" class="auth-form-wrap <?= $mode === 'login' ? 'active' : '' ?>">
+            <div class="form-header">
+                <h2>Welcome back</h2>
+                <p>Sign in to your YouthTrack account</p>
+            </div>
+            <form method="POST" class="auth-form">
+                <input type="hidden" name="action" value="login">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username or Email</label>
+                    <input type="text" name="username" placeholder="Enter username or email" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <div class="input-password">
+                        <input type="password" name="password" id="loginPass" placeholder="Enter password" required>
+                        <button type="button" onclick="togglePass('loginPass',this)"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Sign In <i class="fas fa-arrow-right"></i></button>
+                <p class="form-note">Default admin: <strong>admin</strong> / <strong>password</strong></p>
+            </form>
+        </div>
