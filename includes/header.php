@@ -1,9 +1,5 @@
 <?php
-// ============================================================
-//  YouthTrack – Shared Layout Header
-//  Include at top of every dashboard page AFTER requireLogin()
-//  $pageTitle and $activePage must be set before including
-// ============================================================
+
 require_once __DIR__ . '/auth.php';
 requireLogin();
 $me = getCurrentUser();
