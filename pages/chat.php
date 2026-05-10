@@ -81,4 +81,20 @@ function appendMessage(m) {
     container.appendChild(wrap);
 }
 
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg   = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    input.style.height = '';
+    try {
+        await fetch(`${API_URL}?action=send_message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+        await loadMessages();
+    } catch(e) { input.value = msg; }
+}
+
 </script>
