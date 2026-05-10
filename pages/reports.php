@@ -156,6 +156,58 @@ $stats = [
     </div>
 </div>
 
+<div id="report-activities" class="report-tab-pane card" style="display:none">
+    <div class="card-header">
+        <div class="card-title"><i class="fas fa-calendar-check"></i> Activity Summary <span style="font-size:.75rem;color:var(--gray-400);font-weight:400;margin-left:.5rem">(LEFT JOIN: activities → users, activity_participants)</span></div>
+        <span style="font-size:.82rem;color:var(--gray-400)"><?= count($activities) ?> activities</span>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Created By</th>
+                    <th>Registered</th>
+                    <th>Attended</th>
+                    <th>Absent</th>
+                    <th>Attendance %</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($activities as $i => $act): 
+                $pct = $act['total_registered'] > 0 ? round(($act['total_attended'] / $act['total_registered']) * 100) : 0;
+            ?>
+            <tr>
+                <td><?= $i + 1 ?></td>
+                <td style="font-weight:600"><?= sanitize($act['title']) ?></td>
+                <td><span class="badge badge-member" style="font-size:.7rem"><?= sanitize($act['activity_type']) ?></span></td>
+                <td><span class="badge badge-<?= strtolower($act['status']) ?>" style="font-size:.7rem"><?= $act['status'] ?></span></td>
+                <td><?= $act['activity_date'] ? date('M d, Y', strtotime($act['activity_date'])) : '—' ?></td>
+                <td><?= sanitize($act['venue'] ?? '—') ?></td>
+                <td><?= sanitize(($act['creator_first'] ?? 'Unknown') . ' ' . ($act['creator_last'] ?? '')) ?></td>
+                <td style="text-align:center"><?= $act['total_registered'] ?></td>
+                <td style="text-align:center;color:var(--green-dark);font-weight:600"><?= $act['total_attended'] ?></td>
+                <td style="text-align:center;color:var(--red)"><?= $act['total_absent'] ?></td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:.5rem">
+                        <div style="flex:1;height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden">
+                            <div style="height:100%;width:<?= $pct ?>%;background:<?= $pct >= 75 ? 'var(--green)' : ($pct >= 50 ? 'var(--orange)' : 'var(--red)') ?>;border-radius:10px"></div>
+                        </div>
+                        <span style="font-size:.78rem;font-weight:600;min-width:32px"><?= $pct ?>%</span>
+                    </div>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
