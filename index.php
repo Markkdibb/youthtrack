@@ -6,3 +6,103 @@ if (isLoggedIn()) {
     header('Location: ' . SITE_URL . '/pages/dashboard.php');
     exit;
 }
+
+$error   = '';
+
+$success = '';
+$mode    = $_GET['mode'] ?? 'login'; 
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+
+    if ($_POST['action'] === 'login') {
+        $result = loginUser(trim($_POST['username'] ?? ''), $_POST['password'] ?? '');
+        if ($result['success']) {
+            header('Location: ' . SITE_URL . '/pages/dashboard.php');
+            exit;
+        }
+        $error = $result['message'];
+        $mode  = 'login';
+
+    } elseif ($_POST['action'] === 'register') {
+        $pdo = getDB();
+
+        
+        $required = ['first_name','last_name','username','email','password','confirm_password',
+                     'gender','birthdate','civil_status','educational_attainment','category_id'];
+        $missing = [];
+        foreach ($required as $f) {
+            if (empty($_POST[$f])) $missing[] = $f;
+        }
+
+        if ($missing) {
+            $error = 'Please fill in all required fields.';
+            $mode  = 'register';
+        } elseif ($_POST['password'] !== $_POST['confirm_password']) {
+            $error = 'Passwords do not match.';
+            $mode  = 'register';
+        } elseif (strlen($_POST['password']) < 8) {
+            $error = 'Password must be at least 8 characters.';
+            $mode  = 'register';
+        } else {
+            
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ? LIMIT 1");
+            $stmt->execute([$_POST['username'], $_POST['email']]);
+            if ($stmt->fetch()) {
+                $error = 'Username or email is already taken.';
+                $mode  = 'register';
+            } else {
+                
+                $avatarName = 'default.png';
+                if (!empty($_FILES['profile_picture']['name'])) {
+                    $ext = strtolower(pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION));
+                    $allowed = ['jpg','jpeg','png','gif','webp'];
+                    if (in_array($ext, $allowed) && $_FILES['profile_picture']['size'] < 3000000) {
+                        $avatarName = uniqid('avatar_', true) . '.' . $ext;
+                        move_uploaded_file($_FILES['profile_picture']['tmp_name'], UPLOAD_PATH . $avatarName);
+                    }
+                }
+
+                $birthdate = $_POST['birthdate'];
+                $age = (int) date_diff(date_create($birthdate), date_create('today'))->y;
+
+                $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare("
+                    INSERT INTO users
+                    (category_id, username, password, first_name, middle_name, last_name, suffix,
+                     nickname, gender, birthdate, age, civil_status, educational_attainment,
+                     school_name, email, contact_number, address, purok, sk_position,
+                     profile_picture, bio, status)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'Pending')
+                ");
+                $stmt->execute([
+                    (int)$_POST['category_id'],
+                    trim($_POST['username']),
+                    $hash,
+                    trim($_POST['first_name']),
+                    trim($_POST['middle_name'] ?? ''),
+                    trim($_POST['last_name']),
+                    trim($_POST['suffix'] ?? ''),
+                    trim($_POST['nickname'] ?? ''),
+                    $_POST['gender'],
+                    $birthdate,
+                    $age,
+                    $_POST['civil_status'],
+                    $_POST['educational_attainment'],
+                    trim($_POST['school_name'] ?? ''),
+                    trim($_POST['email']),
+                    trim($_POST['contact_number'] ?? ''),
+                    trim($_POST['address'] ?? ''),
+                    trim($_POST['purok'] ?? ''),
+                    trim($_POST['sk_position'] ?? ''),
+                    $avatarName,
+                    trim($_POST['bio'] ?? ''),
+                ]);
+
+                $success = 'Registration submitted! Please wait for admin approval before logging in.';
+                $mode    = 'login';
+            }
+        }
+    }
+}
+?>
