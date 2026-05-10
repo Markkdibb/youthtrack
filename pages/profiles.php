@@ -416,4 +416,47 @@ $categories = $pdo->query("SELECT * FROM sk_categories ORDER BY id")->fetchAll()
     </form>
 </div>
 
+<div class="card profile-tab-pane" id="tab-activity" style="display:none">
+    <div class="card-header">
+        <div class="card-title"><i class="fas fa-calendar-check"></i> Activity History</div>
+        <span style="font-size:.82rem;color:var(--gray-400)"><?= count($recentActs) ?> records</span>
+    </div>
+    <?php if ($recentActs): ?>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Activity</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($recentActs as $ra): ?>
+            <tr>
+                <td style="font-weight:600"><?= sanitize($ra['title']) ?></td>
+                <td><span class="badge badge-member"><?= sanitize($ra['activity_type']) ?></span></td>
+                <td><?= $ra['activity_date'] ? date('M d, Y', strtotime($ra['activity_date'])) : '—' ?></td>
+                <td><span class="badge badge-<?= strtolower($ra['status']) ?>"><?= $ra['status'] ?></span></td>
+                <td>
+                    <?php
+                    $attColors = ['Registered'=>'badge-pending','Attended'=>'badge-active','Absent'=>'badge-inactive'];
+                    ?>
+                    <span class="badge <?= $attColors[$ra['attendance_status']] ?? '' ?>"><?= $ra['attendance_status'] ?></span>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php else: ?>
+    <div class="empty-state">
+        <i class="fas fa-calendar-xmark"></i>
+        <p>You haven't joined any activities yet. <a href="activities.php" style="color:var(--teal);font-weight:600">Browse Activities →</a></p>
+    </div>
+    <?php endif; ?>
+</div>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
