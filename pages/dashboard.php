@@ -125,4 +125,49 @@ $topParticipants = $pdo->query("
     <?php endif; ?>
 </div>
 
+<div class="charts-grid">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-users"></i> Members by Category</div>
+        </div>
+        <!-- LEFT JOIN used: shows all categories including those with 0 members -->
+        <div class="chart-container"><canvas id="catChart"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-venus-mars"></i> Members by Gender</div>
+        </div>
+        <!-- INNER JOIN used: active users with a valid category -->
+        <div class="chart-container"><canvas id="genderChart"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-layer-group"></i> Activities by Type</div>
+        </div>
+        <div class="chart-container"><canvas id="actTypeChart"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-graduation-cap"></i> Educational Attainment</div>
+        </div>
+        <div class="chart-container"><canvas id="eduChart"></canvas></div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="charts-grid" style="grid-template-columns: 2fr 1fr;">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-chart-line"></i> Monthly Registrations (Last 6 Months)</div>
+        </div>
+        <div class="chart-container"><canvas id="monthChart"></canvas></div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-circle-dot"></i> Activity Status</div>
+        </div>
+        <div class="chart-container"><canvas id="actStatusChart"></canvas></div>
+    </div>
+</div>
+
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
