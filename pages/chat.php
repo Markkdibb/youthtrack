@@ -62,4 +62,23 @@ async function loadMessages() {
     isPolling = false;
 }
 
+function appendMessage(m) {
+    const container = document.getElementById('chatMessages');
+    const wrap = document.createElement('div');
+    wrap.className = `msg-group ${m.is_own ? 'own' : ''}`;
+    wrap.dataset.msgId = m.id;
+    wrap.innerHTML = `
+        <img src="${m.avatar_url}" class="msg-avatar" alt="">
+        <div class="msg-content">
+            <div class="msg-name">${escHtml(m.first_name)} ${escHtml(m.last_name)}${m.sk_position ? ' · ' + escHtml(m.sk_position) : ''}</div>
+            <div class="msg-bubble">${escHtml(m.message).replace(/\n/g,'<br>')}</div>
+            <div class="msg-time">
+                ${m.time_fmt}
+                ${(m.is_own || IS_ADMIN) ? `<button onclick="deleteMessage(${m.id})" style="margin-left:.5rem;background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:.7rem" title="Delete"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+        </div>
+    `;
+    container.appendChild(wrap);
+}
+
 </script>
