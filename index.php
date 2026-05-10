@@ -172,3 +172,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <p class="form-note">Default admin: <strong>admin</strong> / <strong>password</strong></p>
             </form>
         </div>
+
+        <div id="tab-register" class="auth-form-wrap <?= $mode === 'register' ? 'active' : '' ?>">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Fill in your SK membership profile</p>
+            </div>
+            <form method="POST" enctype="multipart/form-data" class="auth-form reg-form">
+                <input type="hidden" name="action" value="register">
+
+                <!-- Avatar Upload -->
+                <div class="avatar-upload-wrap">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <img src="assets/img/default-avatar.png" id="avatarImg" alt="Profile">
+                        <label for="profile_picture" class="avatar-edit"><i class="fas fa-camera"></i></label>
+                    </div>
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+                    <p>Upload profile photo</p>
+                </div>
+
+                <div class="form-section-title">Personal Information</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name <span class="req">*</span></label>
+                        <input type="text" name="first_name" placeholder="First name" required value="<?= sanitize($_POST['first_name'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" name="middle_name" placeholder="Middle name" value="<?= sanitize($_POST['middle_name'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Last Name <span class="req">*</span></label>
+                        <input type="text" name="last_name" placeholder="Last name" required value="<?= sanitize($_POST['last_name'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Suffix</label>
+                        <input type="text" name="suffix" placeholder="Jr., Sr., III" value="<?= sanitize($_POST['suffix'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nickname</label>
+                        <input type="text" name="nickname" placeholder="Nickname" value="<?= sanitize($_POST['nickname'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender <span class="req">*</span></label>
+                        <select name="gender" required>
+                            <option value="">Select gender</option>
+                            <?php foreach(['Male','Female','Non-binary','Prefer not to say'] as $g): ?>
+                            <option value="<?=$g?>" <?= ($_POST['gender'] ?? '') == $g ? 'selected' : '' ?>><?=$g?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Birthdate <span class="req">*</span></label>
+                        <input type="date" name="birthdate" required value="<?= sanitize($_POST['birthdate'] ?? '') ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Civil Status <span class="req">*</span></label>
+                        <select name="civil_status" required>
+                            <?php foreach(['Single','Married','Widowed','Separated','Annulled'] as $s): ?>
+                            <option value="<?=$s?>" <?= ($_POST['civil_status'] ?? 'Single') == $s ? 'selected' : '' ?>><?=$s?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
