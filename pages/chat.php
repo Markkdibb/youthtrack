@@ -122,5 +122,9 @@ document.getElementById('chatInput').addEventListener('input', function() {
     this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
 
+// Initial load + poll
+loadMessages();
+setInterval(loadMessages, 3000);
 
 </script>
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
