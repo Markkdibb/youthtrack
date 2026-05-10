@@ -1,3 +1,8 @@
+/* ============================================================
+   YouthTrack – Main Stylesheet
+   Color: Fresh Green + Deep Teal + Warm Cream
+   Font: Sora (headings) + DM Sans (body)
+   ============================================================ */
 
 :root {
     --green:      #2ecc71;
@@ -41,11 +46,12 @@ a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
 input, select, textarea, button { font-family: inherit; font-size: inherit; }
 
-
+/* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--gray-100); }
 ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 10px; }
 
+/* ─── Utility ────────────────────────────────────────────── */
 .hidden  { display: none !important; }
 .text-center { text-align: center; }
 .mt-1 { margin-top: .5rem; }
@@ -53,6 +59,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .mt-3 { margin-top: 1.5rem; }
 .mb-1 { margin-bottom: .5rem; }
 
+/* ─── Alerts ─────────────────────────────────────────────── */
 .alert {
     padding: .85rem 1.2rem;
     border-radius: var(--radius-sm);
@@ -68,7 +75,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .alert-info    { background: #e8f4fd; color: var(--blue); border-left: 4px solid var(--blue); }
 .alert-warning { background: #fff8e1; color: var(--orange); border-left: 4px solid var(--orange); }
 
-
+/* ============================================================
+   AUTH PAGE
+   ============================================================ */
 .auth-page { background: var(--teal-dark); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
 
 .auth-wrapper {
@@ -83,6 +92,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     min-height: 600px;
 }
 
+/* Hero Panel */
 .auth-hero {
     background: linear-gradient(145deg, var(--teal) 0%, var(--teal-dark) 100%);
     padding: 3rem;
@@ -118,6 +128,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .s2 { width: 180px; height: 180px; top: -60px; right: 40px; }
 .s3 { width: 120px; height: 120px; top: 50%; right: -40px; }
 
+/* Auth Panel */
 .auth-panel { padding: 2.5rem; overflow-y: auto; max-height: 100vh; }
 .auth-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; background: var(--gray-100); padding: .35rem; border-radius: var(--radius-sm); }
 .tab-btn {
@@ -247,6 +258,9 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     transition: var(--transition); font-size: .85rem;
 }
 
+/* ============================================================
+   DASHBOARD LAYOUT
+   ============================================================ */
 .app-layout { display: flex; min-height: 100vh; }
 
 /* Sidebar */
@@ -425,7 +439,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .stat-value { font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--navy); line-height: 1; }
 .stat-label { font-size: .8rem; color: var(--gray-400); margin-top: .25rem; font-weight: 500; }
 
-
+/* ─── Tables ──────────────────────────────────────────────── */
 .table-wrap { overflow-x: auto; }
 .data-table {
     width: 100%;
@@ -450,7 +464,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .avatar-xs { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gray-200); }
 .avatar-sm { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 
-
+/* ─── Badges ──────────────────────────────────────────────── */
 .badge {
     display: inline-flex; align-items: center; gap: .3rem;
     padding: .25rem .7rem;
@@ -469,7 +483,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .badge-male   { background: #e3f2fd; color: #1565c0; }
 .badge-female { background: #fce4ec; color: #c62828; }
 
-
+/* ─── Search & Filter Bar ────────────────────────────────── */
 .table-controls {
     display: flex;
     align-items: center;
@@ -505,7 +519,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     outline: none;
 }
 
-
+/* ─── Charts Grid ─────────────────────────────────────────── */
 .charts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
@@ -514,7 +528,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 }
 .chart-container { position: relative; height: 260px; }
 
-
+/* ─── Dashboard Grid ─────────────────────────────────────── */
 .dash-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -523,7 +537,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 }
 @media (max-width: 1100px) { .dash-grid { grid-template-columns: 1fr; } }
 
-
+/* ─── Activity Timeline ───────────────────────────────────── */
 .activity-feed { display: flex; flex-direction: column; gap: .75rem; }
 .activity-item {
     display: flex;
@@ -585,7 +599,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .modal-close:hover { background: var(--red); color: var(--white); }
 .modal-footer { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.5rem; }
 
-
+/* ─── Profile View ────────────────────────────────────────── */
 .profile-hero {
     background: linear-gradient(135deg, var(--teal), var(--teal-dark));
     border-radius: var(--radius);
@@ -700,6 +714,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .chat-date-divider::before { left:0; }
 .chat-date-divider::after  { right:0; }
 
+/* ─── Announcement Card ───────────────────────────────────── */
 .announcement-item {
     padding: 1rem;
     border-radius: var(--radius-sm);
@@ -712,7 +727,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .announcement-meta { font-size: .75rem; color: var(--gray-400); margin-top: .25rem; }
 .announcement-body { font-size: .85rem; color: var(--gray-600); margin-top: .5rem; }
 
-
+/* ─── Pagination ──────────────────────────────────────────── */
 .pagination { display: flex; align-items: center; justify-content: center; gap: .4rem; margin-top: 1rem; }
 .page-btn {
     width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--gray-200);
@@ -723,12 +738,12 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .page-btn:hover { border-color: var(--green); color: var(--green); }
 .page-btn.active { background: var(--teal); color: var(--white); border-color: var(--teal); }
 
-
+/* ─── Empty State ─────────────────────────────────────────── */
 .empty-state { text-align: center; padding: 3rem 1rem; color: var(--gray-400); }
 .empty-state i { font-size: 2.5rem; margin-bottom: 1rem; opacity: .4; }
 .empty-state p { font-size: .9rem; }
 
-
+/* ─── Confirm Dialog ──────────────────────────────────────── */
 .confirm-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,.6);
@@ -757,7 +772,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
 .btn-confirm-no  { background: var(--gray-100); color: var(--gray-800); border: none; padding: .65rem 1.5rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; transition: var(--transition); }
 .btn-confirm-no:hover  { background: var(--gray-200); }
 
-
+/* ─── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
     .auth-wrapper { grid-template-columns: 1fr; }
     .auth-hero { display: none; }
@@ -771,11 +786,11 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
     .topbar { padding: .75rem 1rem; }
 }
 
-
+/* ─── Spinner ─────────────────────────────────────────────── */
 .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-
+/* ─── Tabs (pages) ────────────────────────────────────────── */
 .page-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--gray-200); }
 .page-tab { padding: .7rem 1.25rem; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--gray-400); font-size: .9rem; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: var(--transition); }
 .page-tab.active { color: var(--teal); border-bottom-color: var(--teal); }

@@ -135,8 +135,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <div class="stat"><i class="fas fa-comments"></i><span>Community Chat</span></div>
             </div>
         </div>
+        <div class="hero-bg-shapes">
+            <div class="shape s1"></div>
+            <div class="shape s2"></div>
+            <div class="shape s3"></div>
+        </div>
+    </div>
 
-        <div class="auth-panel">
+    <div class="auth-panel">
         <div class="auth-tabs">
             <button class="tab-btn <?= $mode === 'login' ? 'active' : '' ?>" onclick="switchTab('login')">Sign In</button>
             <button class="tab-btn <?= $mode === 'register' ? 'active' : '' ?>" onclick="switchTab('register')">Register</button>
