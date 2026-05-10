@@ -106,3 +106,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouthTrack – SK Barangay System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page">
+
+<div class="auth-wrapper">
+    
+    <div class="auth-hero">
+        <div class="hero-content">
+            <div class="brand-mark">
+                <div class="brand-icon"><i class="fas fa-seedling"></i></div>
+                <span>YouthTrack</span>
+            </div>
+            <h1>Empowering<br><em>Kabataan</em></h1>
+            <p>The official Sangguniang Kabataan monitoring system for profiling youth members and tracking community engagement.</p>
+            <div class="hero-stats">
+                <div class="stat"><i class="fas fa-users"></i><span>SK Members</span></div>
+                <div class="stat"><i class="fas fa-calendar-check"></i><span>Activities</span></div>
+                <div class="stat"><i class="fas fa-comments"></i><span>Community Chat</span></div>
+            </div>
+        </div>
