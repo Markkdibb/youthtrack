@@ -1,6 +1,10 @@
+// ============================================================
+//  YouthTrack – Main Application JavaScript (app.js)
+// ============================================================
+
 document.addEventListener('DOMContentLoaded', function () {
 
-
+    // ── Mobile Sidebar Toggle ─────────────────────────────
     const sidebar     = document.getElementById('sidebar');
     const menuToggle  = document.getElementById('menuToggle');
 
@@ -8,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
     }
 
-
+    // Close sidebar when clicking outside (mobile)
     document.addEventListener('click', function (e) {
         if (sidebar && sidebar.classList.contains('open')) {
             if (!sidebar.contains(e.target) && e.target !== menuToggle) {
@@ -17,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
+    // ── Active Nav Highlight ──────────────────────────────
     const currentPath = window.location.pathname;
     document.querySelectorAll('.nav-item').forEach(item => {
         const href = item.getAttribute('href');
@@ -26,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
+    // ── Global Modal Close on Overlay Click ──────────────
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) {
@@ -35,14 +39,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
+    // ── Global Confirm Overlay Close ─────────────────────
     document.querySelectorAll('.confirm-overlay').forEach(overlay => {
         overlay.addEventListener('click', function (e) {
             if (e.target === this) this.classList.remove('show');
         });
     });
 
-
+    // ── Escape Key Closes Modals ──────────────────────────
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.modal-overlay.show, .confirm-overlay.show').forEach(el => {
@@ -51,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
+    // ── Auto-hide Alerts After 5s ─────────────────────────
     document.querySelectorAll('.alert').forEach(alert => {
         setTimeout(() => {
             alert.style.transition = 'opacity .5s ease';
@@ -60,13 +64,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 5000);
     });
 
-
+    // ── Tooltips (title attribute) ────────────────────────
     document.querySelectorAll('[title]').forEach(el => {
         el.addEventListener('mouseenter', showTooltip);
         el.addEventListener('mouseleave', hideTooltip);
     });
 
-
+    // ── File Input Preview (generic) ──────────────────────
     document.querySelectorAll('input[type="file"][data-preview]').forEach(input => {
         input.addEventListener('change', function () {
             const targetId = this.dataset.preview;
@@ -79,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
+    // ── Password Strength Meter ───────────────────────────
     const passInputs = document.querySelectorAll('input[data-strength]');
     passInputs.forEach(inp => {
         inp.addEventListener('input', function () {
@@ -88,13 +92,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ── Confirm before form submit with data-confirm ──────
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', function (e) {
             if (!confirm(this.dataset.confirm)) e.preventDefault();
         });
     });
 
-
+    // ── Sortable Table Headers ────────────────────────────
     document.querySelectorAll('th[data-sort]').forEach(th => {
         th.style.cursor = 'pointer';
         th.addEventListener('click', function () {
@@ -109,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
+    // ── Character Counter for Textareas ──────────────────
     document.querySelectorAll('textarea[maxlength]').forEach(ta => {
         const max     = parseInt(ta.maxLength);
         const counter = document.createElement('small');
@@ -122,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // ── Print Button ──────────────────────────────────────
     document.querySelectorAll('[data-print]').forEach(btn => {
         btn.addEventListener('click', () => window.print());
     });
@@ -130,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initAgeCalculator();
 });
 
-
+// ── Chart.js Global Defaults ──────────────────────────────────
 function initChartDefaults() {
     if (typeof Chart === 'undefined') return;
     Chart.defaults.font.family  = "'DM Sans', sans-serif";
@@ -145,7 +151,7 @@ function initChartDefaults() {
     Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
 }
 
-
+// ── Age Auto-calculator (birthdate → age field) ───────────────
 function initAgeCalculator() {
     const bdInput  = document.querySelector('input[name="birthdate"]');
     const ageInput = document.querySelector('input[name="age"], #ageDisplay');
@@ -160,6 +166,7 @@ function initAgeCalculator() {
     });
 }
 
+// ── Debounce ──────────────────────────────────────────────────
 function debounce(fn, delay) {
     let timer;
     return function (...args) {
@@ -168,6 +175,7 @@ function debounce(fn, delay) {
     };
 }
 
+// ── Tooltip helpers ───────────────────────────────────────────
 function showTooltip(e) {
     const text = this.getAttribute('title');
     if (!text) return;
@@ -192,6 +200,7 @@ function hideTooltip() {
     if (tip) tip.remove();
 }
 
+// ── Password Strength ─────────────────────────────────────────
 function updateStrength(val, meter) {
     let score = 0;
     if (val.length >= 8)        score++;
@@ -206,9 +215,11 @@ function updateStrength(val, meter) {
     if (label) { label.textContent = labels[score]; label.style.color = colors[score]; }
 }
 
+// ── Global Modal Helpers (usable from inline onclick) ────────
 function openModal(id)  { const el = document.getElementById(id); if (el) el.classList.add('show'); }
 function closeModal(id) { const el = document.getElementById(id); if (el) el.classList.remove('show'); }
 
+// ── Confirm Dialog ────────────────────────────────────────────
 let _confirmCallback = null;
 function showConfirm(title, msg, callback) {
     const overlay = document.getElementById('confirmOverlay');
@@ -227,6 +238,7 @@ function closeConfirm() {
     if (overlay) overlay.classList.remove('show');
 }
 
+// ── Toast Notifications ───────────────────────────────────────
 function showToast(message, type = 'success', duration = 3500) {
     const colors = { success: 'var(--green)', error: 'var(--red)', info: 'var(--blue)', warning: 'var(--orange)' };
     const icons  = { success: 'fa-check-circle', error: 'fa-circle-exclamation', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
@@ -248,6 +260,7 @@ function showToast(message, type = 'success', duration = 3500) {
     }, duration);
 }
 
+// Add toast animation styles once
 (function () {
     const s = document.createElement('style');
     s.textContent = `
@@ -257,6 +270,7 @@ function showToast(message, type = 'success', duration = 3500) {
     document.head.appendChild(s);
 })();
 
+// ── URL param helper ──────────────────────────────────────────
 function applyParam(key, val) {
     const u = new URL(window.location.href);
     val ? u.searchParams.set(key, val) : u.searchParams.delete(key);
@@ -269,19 +283,23 @@ function goPage(p) {
     window.location = u.toString();
 }
 
+// ── Format date helper ────────────────────────────────────────
 function fmtDate(dateStr) {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+// ── HTML escape ───────────────────────────────────────────────
 function escHtml(str) {
     return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Copy to Clipboard ─────────────────────────────────────────
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success', 2000));
 }
 
+// ── Sidebar hamburger (mobile) – inject button if missing ────
 (function injectHamburger() {
     const topbar = document.querySelector('.topbar-right');
     if (!topbar) return;
