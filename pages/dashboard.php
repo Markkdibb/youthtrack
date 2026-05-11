@@ -5,6 +5,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 $pdo = getDB();
 
+// ── Stats ───────────────────────────────────────────────────
 // INNER JOIN: members with their categories (only members WITH a category)
 $totalMembers    = $pdo->query("SELECT COUNT(*) FROM users WHERE status='Active'")->fetchColumn();
 $totalActivities = $pdo->query("SELECT COUNT(*) FROM activities")->fetchColumn();
@@ -55,7 +56,24 @@ $eduChart = $pdo->query("
     ORDER BY total DESC
 ")->fetchAll();
 
-// Chart: Monthly registrations 
+// Chart: Members by Age Group (SK-relevant brackets)
+$ageChart = $pdo->query("
+    SELECT
+        CASE
+            WHEN age BETWEEN 15 AND 17 THEN '15–17'
+            WHEN age BETWEEN 18 AND 20 THEN '18–20'
+            WHEN age BETWEEN 21 AND 24 THEN '21–24'
+            WHEN age BETWEEN 25 AND 30 THEN '25–30'
+            ELSE '31+'
+        END AS age_group,
+        COUNT(*) AS total
+    FROM users
+    WHERE status = 'Active' AND age IS NOT NULL AND age > 0
+    GROUP BY age_group
+    ORDER BY MIN(age)
+")->fetchAll();
+
+// Chart: Monthly registrations (last 6 months)
 $monthChart = $pdo->query("
     SELECT DATE_FORMAT(created_at, '%b %Y') AS month, COUNT(*) AS total
     FROM users
@@ -96,6 +114,7 @@ $topParticipants = $pdo->query("
 ")->fetchAll();
 ?>
 
+<!-- Stat Cards -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon green"><i class="fas fa-users"></i></div>
@@ -125,6 +144,7 @@ $topParticipants = $pdo->query("
     <?php endif; ?>
 </div>
 
+<!-- Charts Row 1 -->
 <div class="charts-grid">
     <div class="card">
         <div class="card-header">
@@ -152,9 +172,14 @@ $topParticipants = $pdo->query("
         </div>
         <div class="chart-container"><canvas id="eduChart"></canvas></div>
     </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fas fa-chart-bar"></i> Members by Age Group</div>
+        </div>
+        <!-- Active members grouped into SK-relevant age brackets -->
+        <div class="chart-container"><canvas id="ageChart"></canvas></div>
+    </div>
 </div>
-
-<!-- Charts Row 2 -->
 <div class="charts-grid" style="grid-template-columns: 2fr 1fr;">
     <div class="card">
         <div class="card-header">
@@ -170,6 +195,7 @@ $topParticipants = $pdo->query("
     </div>
 </div>
 
+<!-- Dashboard Bottom Grid -->
 <div class="dash-grid">
     <!-- Recent Activities -->
     <div class="card">
@@ -240,8 +266,36 @@ $topParticipants = $pdo->query("
     </div>
 </div>
 
+<!-- ── Barangay Activity Map (Leaflet.js) ──────────────────── -->
+<div class="card" style="margin-top:1.5rem">
+    <div class="card-header">
+        <div class="card-title">
+            <i class="fas fa-map-location-dot"></i> Barangay Activity Map
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+            <span style="font-size:.78rem;color:var(--gray-400)">
+                <span style="display:inline-block;width:10px;height:10px;background:var(--green);border-radius:50%;margin-right:.3rem"></span>Completed
+                <span style="display:inline-block;width:10px;height:10px;background:#3498db;border-radius:50%;margin:0 .3rem 0 .75rem"></span>Ongoing
+                <span style="display:inline-block;width:10px;height:10px;background:#f39c12;border-radius:50%;margin:0 .3rem 0 .75rem"></span>Pending
+                <span style="display:inline-block;width:10px;height:10px;background:#e74c3c;border-radius:50%;margin:0 .3rem 0 .75rem"></span>Cancelled
+            </span>
+            <select id="mapFilterStatus" class="filter-select" style="padding:.4rem .8rem;font-size:.82rem" onchange="filterMapMarkers(this.value)">
+                <option value="">All Status</option>
+                <option value="Completed">Completed</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Pending">Pending</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+    <div id="barangayMap" style="height:420px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--gray-200)"></div>
+    <div style="margin-top:.85rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+        <span style="font-size:.8rem;color:var(--gray-400)"><i class="fas fa-circle-info"></i> Click a marker to view activity details. Map centered on Manolo Fortich, Bukidnon.</span>
+    </div>
+</div>
+
 <script>
-// Chart.js defaults 
+// ── Chart.js defaults ────────────────────────────────────────
 Chart.defaults.font.family = "'DM Sans', sans-serif";
 Chart.defaults.color = '#5a7265';
 
@@ -307,15 +361,187 @@ new Chart(document.getElementById('monthChart'), {
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
 });
 
-// Activity Status
-new Chart(document.getElementById('actStatusChart'), {
-    type: 'pie',
+// Age Group Chart
+new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
     data: {
-        labels: <?= json_encode(array_column($actStatusChart, 'status')) ?>,
-        datasets: [{ data: <?= json_encode(array_column($actStatusChart, 'total')) ?>, backgroundColor: ['#f39c12','#3498db','#2ecc71','#e74c3c'], borderWidth: 3, borderColor: '#fff' }]
+        labels: <?= json_encode(array_column($ageChart, 'age_group')) ?>,
+        datasets: [{
+            label: 'Members',
+            data: <?= json_encode(array_column($ageChart, 'total')) ?>,
+            backgroundColor: ['#2ecc71','#0d6e5a','#27ae60','#1abc9c','#6ec99e'],
+            borderRadius: 10,
+            borderSkipped: false
+        }]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } } } }
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y} member${ctx.parsed.y !== 1 ? 's' : ''}`
+                }
+            }
+        },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { grid: { display: false } }
+        }
+    }
 });
+
+// ── Leaflet Map ───────────────────────────────────────────────
+// Activity locations: seeded around Manolo Fortich, Bukidnon (8.3640° N, 124.9990° E)
+const ACTIVITY_PINS = <?php
+    // Build activity pins from DB — use venue as label, scatter coords around barangay center
+    $mapActs = $pdo->query("
+        SELECT a.id, a.title, a.venue, a.activity_type, a.status, a.activity_date, a.description,
+               u.first_name, u.last_name,
+               COUNT(ap.id) AS participants
+        FROM activities a
+        LEFT JOIN users u ON a.created_by = u.id
+        LEFT JOIN activity_participants ap ON ap.activity_id = a.id
+        GROUP BY a.id
+        ORDER BY a.activity_date DESC
+    ")->fetchAll();
+
+    // Base coordinates: Manolo Fortich, Bukidnon
+    $baseLat = 8.3640; $baseLng = 124.9990;
+    $pins = [];
+    $offsets = [
+        [0.0000, 0.0000], [0.0025, 0.0018], [-0.0020, 0.0030],
+        [0.0040, -0.0025], [-0.0035, -0.0015], [0.0015, 0.0045],
+        [-0.0050, 0.0020], [0.0030, -0.0040], [0.0060, 0.0010],
+        [-0.0010, -0.0055],
+    ];
+    foreach ($mapActs as $i => $act) {
+        $off = $offsets[$i % count($offsets)];
+        $pins[] = [
+            'id'           => $act['id'],
+            'title'        => $act['title'],
+            'venue'        => $act['venue'] ?? 'Barangay Hall',
+            'type'         => $act['activity_type'],
+            'status'       => $act['status'],
+            'date'         => $act['activity_date'] ? date('M d, Y', strtotime($act['activity_date'])) : 'TBD',
+            'creator'      => ($act['first_name'] ?? 'Admin') . ' ' . ($act['last_name'] ?? ''),
+            'participants' => (int)$act['participants'],
+            'description'  => mb_substr($act['description'] ?? '', 0, 80),
+            'lat'          => round($baseLat + $off[0] + (mt_rand(-5, 5) / 10000), 6),
+            'lng'          => round($baseLng + $off[1] + (mt_rand(-5, 5) / 10000), 6),
+        ];
+    }
+    echo json_encode($pins);
+?>;
+
+// Status → color map
+const STATUS_COLORS = {
+    'Completed': '#2ecc71',
+    'Ongoing':   '#3498db',
+    'Pending':   '#f39c12',
+    'Cancelled': '#e74c3c'
+};
+
+// Init Leaflet map
+const map = L.map('barangayMap', {
+    center: [8.3640, 124.9990],
+    zoom: 14,
+    zoomControl: true,
+    scrollWheelZoom: false
+});
+
+// Tile layer — OpenStreetMap
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+}).addTo(map);
+
+// Barangay center marker (star)
+const centerIcon = L.divIcon({
+    html: `<div style="
+        width:34px;height:34px;border-radius:50%;
+        background:linear-gradient(135deg,#0d6e5a,#2ecc71);
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-size:14px;
+        box-shadow:0 3px 10px rgba(13,110,90,.5),0 0 0 4px rgba(46,204,113,.25);
+        border:2px solid #fff;
+    "><i class="fas fa-map-pin"></i></div>`,
+    className: '',
+    iconSize: [34, 34],
+    iconAnchor: [17, 17]
+});
+L.marker([8.3640, 124.9990], { icon: centerIcon })
+    .addTo(map)
+    .bindPopup(`<div style="font-family:'DM Sans',sans-serif;min-width:160px">
+        <div style="font-weight:700;color:#0d6e5a;font-size:.95rem">📍 Manolo Fortich</div>
+        <div style="font-size:.82rem;color:#5a7265;margin-top:.3rem">Barangay SK Headquarters<br>Bukidnon, Philippines</div>
+    </div>`, { maxWidth: 220 });
+
+// Activity markers
+let allMarkers = [];
+
+function createActivityIcon(status) {
+    const color = STATUS_COLORS[status] || '#9b59b6';
+    return L.divIcon({
+        html: `<div style="
+            width:28px;height:28px;border-radius:50%;
+            background:${color};
+            display:flex;align-items:center;justify-content:center;
+            color:#fff;font-size:12px;
+            box-shadow:0 3px 8px ${color}88,0 0 0 3px ${color}33;
+            border:2px solid #fff;
+            cursor:pointer;
+            transition:transform .2s ease;
+        "><i class="fas fa-calendar-check"></i></div>`,
+        className: '',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+    });
+}
+
+ACTIVITY_PINS.forEach(pin => {
+    const marker = L.marker([pin.lat, pin.lng], { icon: createActivityIcon(pin.status) });
+
+    const statusColor = STATUS_COLORS[pin.status] || '#9b59b6';
+    marker.bindPopup(`
+        <div style="font-family:'DM Sans',sans-serif;min-width:220px;max-width:260px">
+            <div style="background:${statusColor};color:#fff;padding:.55rem .85rem;margin:-.75rem -.75rem .75rem;border-radius:8px 8px 0 0;font-weight:700;font-size:.9rem">
+                ${pin.title}
+            </div>
+            <table style="width:100%;font-size:.8rem;border-collapse:collapse">
+                <tr><td style="color:#9db5a6;padding:.2rem 0;width:80px">Type</td><td style="font-weight:600">${pin.type}</td></tr>
+                <tr><td style="color:#9db5a6;padding:.2rem 0">Status</td><td><span style="background:${statusColor}22;color:${statusColor};padding:.15rem .5rem;border-radius:20px;font-weight:700;font-size:.75rem">${pin.status}</span></td></tr>
+                <tr><td style="color:#9db5a6;padding:.2rem 0">Venue</td><td style="font-weight:600">${pin.venue}</td></tr>
+                <tr><td style="color:#9db5a6;padding:.2rem 0">Date</td><td>${pin.date}</td></tr>
+                <tr><td style="color:#9db5a6;padding:.2rem 0">By</td><td>${pin.creator}</td></tr>
+                <tr><td style="color:#9db5a6;padding:.2rem 0">Members</td><td><strong>${pin.participants}</strong> joined</td></tr>
+            </table>
+            ${pin.description ? `<div style="margin-top:.6rem;padding:.5rem;background:#f8faf9;border-radius:6px;font-size:.78rem;color:#5a7265">${pin.description}…</div>` : ''}
+        </div>
+    `, { maxWidth: 280 });
+
+    marker.addTo(map);
+    marker._activityStatus = pin.status;
+    allMarkers.push(marker);
+});
+
+// Filter markers by status
+function filterMapMarkers(status) {
+    allMarkers.forEach(m => {
+        if (!status || m._activityStatus === status) {
+            m.addTo(map);
+        } else {
+            map.removeLayer(m);
+        }
+    });
+}
+
+// Fit map to all pins
+if (ACTIVITY_PINS.length > 0) {
+    const latlngs = [[8.3640, 124.9990], ...ACTIVITY_PINS.map(p => [p.lat, p.lng])];
+    map.fitBounds(latlngs, { padding: [30, 30], maxZoom: 15 });
+}
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
