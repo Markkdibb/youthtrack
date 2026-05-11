@@ -1,5 +1,9 @@
 <?php
-
+// ============================================================
+//  YouthTrack – Shared Layout Header
+//  Include at top of every dashboard page AFTER requireLogin()
+//  $pageTitle and $activePage must be set before including
+// ============================================================
 require_once __DIR__ . '/auth.php';
 requireLogin();
 $me = getCurrentUser();
@@ -31,7 +35,23 @@ $activePage = $activePage ?? 'dashboard';
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="<?= SITE_URL ?>/assets/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+/* Sidebar background image with green overlay */
+#sidebar {
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(7, 42, 33, 0.94) 0%,
+            rgba(10, 60, 46, 0.91) 35%,
+            rgba(8, 46, 37, 0.96) 100%
+        ),
+        url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&q=75&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+}
+</style>
 </head>
 <body>
 <div class="app-layout">
