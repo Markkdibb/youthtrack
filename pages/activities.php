@@ -181,13 +181,14 @@ $myJoined = array_column($myIds->fetchAll(), 'activity_id');
                 <td>
                     <div style="display:flex;gap:.4rem;flex-wrap:nowrap">
                         <!-- Join/Leave button for all users -->
-                        <form method="POST" action="<?= SITE_URL ?>/pages/api.php" style="display:inline">
-                            <input type="hidden" name="action" value="toggle_participation">
-                            <input type="hidden" name="activity_id" value="<?= $act['id'] ?>">
-                            <button type="submit" class="btn-sm <?= $joined ? 'btn-delete' : 'btn-approve' ?>" title="<?= $joined ? 'Leave' : 'Join' ?>">
-                                <i class="fas <?= $joined ? 'fa-user-minus' : 'fa-user-plus' ?>"></i>
-                            </button>
-                        </form>
+                        <button
+                            type="button"
+                            onclick="toggleParticipation(<?= $act['id'] ?>)"
+                            class="btn-sm <?= $joined ? 'btn-delete' : 'btn-approve' ?>"
+                            title="<?= $joined ? 'Leave' : 'Join' ?>"
+                        >
+                            <i class="fas <?= $joined ? 'fa-user-minus' : 'fa-user-plus' ?>"></i>
+                        </button>
                         <?php if (isAdmin()): ?>
                         <button class="btn-sm btn-edit" onclick='editActivity(<?= json_encode($act) ?>)'><i class="fas fa-pen"></i></button>
                         <button class="btn-sm btn-delete" onclick="confirmActDelete(<?= $act['id'] ?>, '<?= addslashes($act['title']) ?>')"><i class="fas fa-trash"></i></button>
@@ -333,6 +334,28 @@ async function viewParticipants(actId, title) {
             <span class="badge ${statusColors[p.attendance_status]}">${p.attendance_status}</span>
         </div>`).join('')}
     `;
+}
+async function toggleParticipation(activityId) {
+    try {
+        const formData = new FormData();
+        formData.append('action', 'toggle_participation');
+        formData.append('activity_id', activityId);
+
+        const res = await fetch(`<?= SITE_URL ?>/pages/api.php`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.joined !== undefined) {
+            location.reload();
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert('Something went wrong.');
+    }
 }
 </script>
 

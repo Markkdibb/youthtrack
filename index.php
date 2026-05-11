@@ -1,18 +1,17 @@
 <?php
 require_once 'includes/auth.php';
 
-
+// Redirect if already logged in
 if (isLoggedIn()) {
     header('Location: ' . SITE_URL . '/pages/dashboard.php');
     exit;
 }
 
 $error   = '';
-
 $success = '';
-$mode    = $_GET['mode'] ?? 'login'; 
+$mode    = $_GET['mode'] ?? 'login'; // 'login' or 'register'
 
-
+// ── Handle Login ──────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
     if ($_POST['action'] === 'login') {
@@ -27,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     } elseif ($_POST['action'] === 'register') {
         $pdo = getDB();
 
-        
+        // Validate required fields
         $required = ['first_name','last_name','username','email','password','confirm_password',
                      'gender','birthdate','civil_status','educational_attainment','category_id'];
         $missing = [];
@@ -45,14 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $error = 'Password must be at least 8 characters.';
             $mode  = 'register';
         } else {
-            
+            // Check duplicates
             $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ? LIMIT 1");
             $stmt->execute([$_POST['username'], $_POST['email']]);
             if ($stmt->fetch()) {
                 $error = 'Username or email is already taken.';
                 $mode  = 'register';
             } else {
-                
+                // Handle profile picture upload
                 $avatarName = 'default.png';
                 if (!empty($_FILES['profile_picture']['name'])) {
                     $ext = strtolower(pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION));
@@ -63,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     }
                 }
 
+                // Calculate age
                 $birthdate = $_POST['birthdate'];
                 $age = (int) date_diff(date_create($birthdate), date_create('today'))->y;
 
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 <body class="auth-page">
 
 <div class="auth-wrapper">
-    
+    <!-- Left Panel -->
     <div class="auth-hero">
         <div class="hero-content">
             <div class="brand-mark">
@@ -142,6 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </div>
     </div>
 
+    <!-- Right Panel: Auth Forms -->
     <div class="auth-panel">
         <div class="auth-tabs">
             <button class="tab-btn <?= $mode === 'login' ? 'active' : '' ?>" onclick="switchTab('login')">Sign In</button>
@@ -155,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div class="alert alert-success"><i class="fas fa-circle-check"></i> <?= sanitize($success) ?></div>
         <?php endif; ?>
 
-        
+        <!-- LOGIN FORM -->
         <div id="tab-login" class="auth-form-wrap <?= $mode === 'login' ? 'active' : '' ?>">
             <div class="form-header">
                 <h2>Welcome back</h2>
@@ -179,6 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </form>
         </div>
 
+        <!-- REGISTER FORM -->
         <div id="tab-register" class="auth-form-wrap <?= $mode === 'register' ? 'active' : '' ?>">
             <div class="form-header">
                 <h2>Create Account</h2>
@@ -190,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <!-- Avatar Upload -->
                 <div class="avatar-upload-wrap">
                     <div class="avatar-preview" id="avatarPreview">
-                        <img src="assets/img/default-avatar.png" id="avatarImg" alt="Profile">
+                        <img src="assets/img/default-avatar.svg" id="avatarImg" alt="Profile">
                         <label for="profile_picture" class="avatar-edit"><i class="fas fa-camera"></i></label>
                     </div>
                     <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display:none" onchange="previewAvatar(this)">
